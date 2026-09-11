@@ -1,0 +1,29 @@
+# Environment variables & API Keys (DO NOT COMMIT SECRETS)
+.env
+**/.env
+*.env
+
+# Python virtual environment
+venv/
+**/venv/
+ENV/
+env/
+
+# Python cache & compiled files
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+
+# Cache & session logs
+.session_cache.json
+**/.session_cache.json
+*.log
+
+# IDE & OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.zip
+*.pdf

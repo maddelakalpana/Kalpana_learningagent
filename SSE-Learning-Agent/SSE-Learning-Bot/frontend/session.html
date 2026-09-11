@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SSE Learning Bot | Session</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="/static/assets/sse-logo.svg">
+  <link rel="stylesheet" href="/static/css/style.css?v=4.2.0">
+</head>
+<body class="learn-body">
+
+  <!-- Top Bar -->
+  <header class="learn-header">
+    <div class="learn-header-inner">
+      <div class="learn-header-left">
+        <a href="/" class="back-link" aria-label="Back to setup">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          New Session
+        </a>
+        <span class="brand-divider">/</span>
+        <div class="session-info" id="sessionInfoBar">
+          <span class="session-topic-label" id="headerTopicName">Loading...</span>
+          <span class="mode-badge" id="headerModeBadge">—</span>
+        </div>
+      </div>
+      <div class="session-status-wrap">
+        <div class="session-status-dot" id="connectionDot" aria-label="Connection status">
+          <span class="dot-ring"></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Room -->
+  <div class="learn-shell">
+
+    <!-- AI Tutor Panel -->
+    <aside class="tutor-panel" aria-label="AI Tutor">
+      <div class="tutor-orb-wrap">
+        <div class="tutor-orb" id="tutorOrb">
+          <span class="orb-ring orb-ring-outer"></span>
+          <span class="orb-ring orb-ring-inner"></span>
+          <span class="orb-core">
+            <span class="orb-sheen"></span>
+            <span class="orb-eye eye-l"></span>
+            <span class="orb-eye eye-r"></span>
+          </span>
+        </div>
+        <div class="tutor-label" id="tutorLabel">Connecting...</div>
+      </div>
+
+      <!-- Current AI speech bubble -->
+      <div class="speech-bubble" id="speechBubble" aria-live="polite">
+        <p id="currentAiText">Preparing your session...</p>
+      </div>
+
+      <!-- Status chip -->
+      <div class="listening-chip" id="listeningChip">
+        <span class="chip-dot" aria-hidden="true"></span>
+        <span id="chipLabel">Connecting</span>
+      </div>
+    </aside>
+
+    <!-- Conversation Panel -->
+    <main class="convo-panel">
+      <div class="convo-header">
+        <h1 class="convo-title" id="convoTopicTitle">Session</h1>
+        <span class="convo-mode-pill" id="convoModePill">—</span>
+      </div>
+
+      <!-- Transcript -->
+      <div class="transcript-scroll" id="transcriptScroll" aria-live="polite" aria-label="Conversation">
+        <div class="transcript-empty" id="transcriptEmpty">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="1.5"/></svg>
+          <p>The conversation will appear here.</p>
+        </div>
+      </div>
+
+      <!-- Input Row -->
+      <div class="input-row" id="inputRow">
+        <!-- Text input -->
+        <div class="text-input-wrap">
+          <input type="text" id="textInput" class="text-input" placeholder="Type a message or question..." autocomplete="off" aria-label="Type your message">
+          <button type="button" class="send-btn" id="sendTextBtn" aria-label="Send message">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 2L15 22 11 13 2 9l20-7z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+
+        <!-- Voice button -->
+        <button type="button" class="mic-btn" id="micBtn" aria-label="Hold to speak">
+          <svg class="mic-icon" width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="9" y="2" width="6" height="12" rx="3" stroke="currentColor" stroke-width="2"/><path d="M5 10a7 7 0 0 0 14 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="22" x2="12" y2="17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="8" y1="22" x2="16" y2="22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span class="mic-label">Hold to speak</span>
+          <span class="mic-recording-ring" aria-hidden="true"></span>
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <script src="/static/js/app.js?v=10.0.0"></script>
+</body>
+</html>

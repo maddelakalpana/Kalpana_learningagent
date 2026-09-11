@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="SSE Learning Bot — Upload any topic document and learn interactively with voice and text.">
+  <title>SSE Learning Bot | Setup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="/static/assets/sse-logo.svg">
+  <link rel="stylesheet" href="/static/css/style.css?v=9.0.0">
+</head>
+<body class="setup-body">
+
+  <!-- Top Bar -->
+  <header class="top-bar">
+    <div class="top-bar-inner">
+      <div class="brand-dot-row">
+        <img src="/static/assets/sse-logo.svg" alt="SSE Logo" class="brand-logo">
+        <span class="brand-divider">/</span>
+        <span class="brand-title">SSE Learning Bot</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <button type="button" class="btn-history-toggle" id="toggleSidebarBtn" title="View past learning sessions">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Past Sessions
+        </button>
+        <div class="brand-badge-pill">
+          <span class="brand-orb-mini" aria-hidden="true"></span>
+          <span class="brand-sub">Interactive Tutor</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ChatGPT-Style Sidebar Overlay (Hidden by Default) -->
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+  <aside class="history-sidebar" id="historySidebar" aria-label="Session History">
+    <div class="sidebar-header">
+      <div class="sidebar-title-group">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h3 class="sidebar-title">Past Sessions</h3>
+      </div>
+      <button type="button" class="sidebar-close-btn" id="closeSidebarBtn" aria-label="Close history sidebar">✕</button>
+    </div>
+    <div class="sidebar-body" id="sidebarHistoryList">
+      <p style="color:var(--text-muted);font-size:0.88rem;padding:8px 0;">Loading sessions...</p>
+    </div>
+  </aside>
+
+  <main class="setup-main">
+
+    <!-- Upload & Topic Search Card -->
+    <section class="setup-card" id="uploadCard">
+      <div class="setup-card-header">
+        <div class="step-badge">1</div>
+        <div>
+          <h2 class="setup-card-title">Choose How to Load Study Material</h2>
+          <p class="setup-card-sub">Search any topic to gather intelligent web content (via Tavily &amp; OpenRouter), or upload/paste notes.</p>
+        </div>
+      </div>
+
+      <!-- Mode Switcher Tabs -->
+      <div class="input-tabs">
+        <button type="button" class="tab-btn active" id="tabSearch" onclick="switchInputTab('search')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Search Topic (AI &amp; Web Gather)
+        </button>
+        <button type="button" class="tab-btn" id="tabUpload" onclick="switchInputTab('upload')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" stroke="currentColor" stroke-width="2"/><path d="M14 2v6h6" stroke="currentColor" stroke-width="2"/></svg>
+          Upload Document / Paste Notes
+        </button>
+      </div>
+
+      <!-- Tab 1: AI Topic Search & Synthesis -->
+      <div id="panelSearch" class="tab-panel">
+        <div class="topic-search-card">
+          <div class="search-field-wrapper">
+            <div class="search-icon-prefix" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="var(--primary)" stroke-width="2.2" stroke-linecap="round"/></svg>
+            </div>
+            <input type="text" id="searchTopicInput" class="search-input" placeholder="Search any topic (e.g. Operating Systems, Thermodynamics, Circuit Design)...">
+          </div>
+
+
+          <div class="model-selection-area">
+            <label class="model-section-label">Select OpenRouter AI Model:</label>
+            <div class="model-cards-grid">
+              <div class="model-card selected" data-model="nemotron" onclick="selectModelCard(this, 'nemotron')">
+                <div class="model-card-badge">⚡ Recommended</div>
+                <div class="model-card-title">NVIDIA Nemotron</div>
+                <div class="model-card-sub">70B Instruct (Free Router)</div>
+              </div>
+              <div class="model-card" data-model="gemma" onclick="selectModelCard(this, 'gemma')">
+                <div class="model-card-badge">🌐 Google AI</div>
+                <div class="model-card-title">Google Gemma 2</div>
+                <div class="model-card-sub">27B / 29B Instruct Model</div>
+              </div>
+              <div class="model-card" data-model="free_router" onclick="selectModelCard(this, 'free_router')">
+                <div class="model-card-badge">🔀 Smart Auto</div>
+                <div class="model-card-title">Free Router</div>
+                <div class="model-card-sub">OpenRouter Auto Selection</div>
+              </div>
+            </div>
+            <input type="hidden" id="selectedModelValue" value="nemotron">
+          </div>
+
+          <button type="button" class="btn-gather-topic" id="gatherTopicBtn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            <span>Intelligently Gather &amp; Synthesize Topic</span>
+          </button>
+
+          <!-- Status / Progress Banner -->
+          <div class="topic-status-banner hidden" id="topicSearchStatus">
+            <div id="statusMessage" class="status-content">
+              <span class="status-spinner"></span>
+              <span>Searching live web context via Tavily API and synthesizing with OpenRouter...</span>
+            </div>
+            <div class="sources-list hidden" id="topicSources"></div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Tab 2: Upload File / Paste Text -->
+      <div id="panelUpload" class="tab-panel hidden">
+        <!-- Drag & Drop Zone -->
+        <div class="drop-zone" id="dropZone" role="button" tabindex="0" aria-label="Upload file area">
+          <div class="drop-zone-icon" aria-hidden="true">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none"><path d="M12 16V8m0 0-3 3m3-3 3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.8"/></svg>
+          </div>
+          <p class="drop-zone-label">Drag &amp; drop your file here</p>
+          <p class="drop-zone-hint">PDF, DOCX, TXT, MD supported</p>
+          <button type="button" class="btn btn-outline" id="browseBtn">Browse file</button>
+          <input type="file" id="fileInput" accept=".pdf,.docx,.txt,.md,text/plain,text/markdown,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden>
+        </div>
+
+        <!-- File loaded chip -->
+        <div class="file-chip hidden" id="fileChip">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="2"/></svg>
+          <span id="fileChipName">document.pdf</span>
+          <button type="button" class="file-chip-remove" id="removeFileBtn" aria-label="Remove file">✕</button>
+        </div>
+
+        <div class="divider-or"><span>or paste text</span></div>
+      </div>
+
+      <!-- Synthesized / Extracted Study Material Preview -->
+      <div style="margin-top:20px;">
+        <label for="docText" class="field-label" style="display:flex;justify-content:space-between;align-items:center;">
+          <span>Study Material Content</span>
+          <span style="font-size:0.78rem;font-weight:400;color:var(--text-muted)">Auto-generated or pasted text</span>
+        </label>
+        <textarea id="docText" class="doc-textarea" rows="7" placeholder="Your study material content will appear here after searching a topic or uploading/pasting notes..."></textarea>
+      </div>
+
+      <!-- Topic name -->
+      <div class="topic-field" style="margin-top:16px;">
+        <label for="topicName" class="field-label">Topic / Chapter Name</label>
+        <input type="text" id="topicName" class="field-input" placeholder="e.g. Binary Search Trees, Operating Systems — Memory Management">
+      </div>
+    </section>
+
+
+    <!-- Mode Selection Card -->
+    <section class="setup-card" id="modeCard">
+      <div class="setup-card-header">
+        <div class="step-badge">2</div>
+        <div>
+          <h2 class="setup-card-title">Choose Your Learning Mode</h2>
+          <p class="setup-card-sub">How do you want the AI to help you today?</p>
+        </div>
+      </div>
+
+      <div class="mode-grid">
+        <button type="button" class="mode-card selected" id="modeTeach" data-mode="teach">
+          <div class="mode-card-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 3L2 8l10 5 10-5-10-5z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M2 12l10 5 10-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 16l10 5 10-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="mode-card-body">
+            <h3 class="mode-card-title">Teach Me</h3>
+            <p class="mode-card-desc">The AI will explain the topic step by step, pausing to check your understanding before moving forward.</p>
+          </div>
+          <span class="mode-card-check" aria-hidden="true">✓</span>
+        </button>
+
+        <button type="button" class="mode-card" id="modeDoubt" data-mode="doubt">
+          <div class="mode-card-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="mode-card-body">
+            <h3 class="mode-card-title">Doubt Resolution</h3>
+            <p class="mode-card-desc">Ask any question about the topic and have a free-flowing conversation with the AI tutor.</p>
+          </div>
+          <span class="mode-card-check" aria-hidden="true">✓</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Start Button -->
+    <button type="button" class="btn-start" id="startBtn">
+      <span class="btn-start-text">Start Learning Session</span>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+
+    <div class="error-banner hidden" id="errorBanner" role="alert"></div>
+
+  </main>
+
+  <script>
+    // ── Sidebar Controls ──────────────────────────────────────────────────
+    const toggleSidebarBtn = document.getElementById('toggleSidebarBtn');
+    const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+    const historySidebar = document.getElementById('historySidebar');
+    const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+
+    function openSidebar() {
+      historySidebar.classList.add('open');
+      sidebarBackdrop.classList.add('active');
+      loadSidebarSessions();
+    }
+
+    function closeSidebar() {
+      historySidebar.classList.remove('open');
+      sidebarBackdrop.classList.remove('active');
+    }
+
+    toggleSidebarBtn.addEventListener('click', openSidebar);
+    closeSidebarBtn.addEventListener('click', closeSidebar);
+    sidebarBackdrop.addEventListener('click', closeSidebar);
+
+    async function loadSidebarSessions() {
+      const sidebarHistoryList = document.getElementById('sidebarHistoryList');
+      try {
+        const res = await fetch('/api/sessions');
+        const data = await res.json();
+        if (!res.ok || !data.sessions || !data.sessions.length) {
+          sidebarHistoryList.innerHTML = '<p style="color:var(--text-muted);font-size:0.88rem;padding:12px 0;">No past sessions yet. Start your first session above!</p>';
+          return;
+        }
+        sidebarHistoryList.innerHTML = data.sessions.map(s => `
+          <div class="sidebar-item" id="sidebar_session_${s.id}">
+            <div class="sidebar-item-top">
+              <span class="sidebar-topic-name" title="${escapeHtml(s.topic_name)}">${escapeHtml(s.topic_name)}</span>
+              <button type="button" class="btn-delete-session" onclick="deleteSession('${s.id}')" title="Delete session">🗑</button>
+            </div>
+            <div class="sidebar-meta">
+              <span>${s.mode === 'teach' ? '📖 Teach Me' : '💬 Doubt Resolution'}</span>
+              <span>•</span>
+              <span>${s.message_count} messages</span>
+            </div>
+            <div class="sidebar-item-footer">
+              <span style="font-size:0.75rem;color:var(--text-dim);">${s.created_at || 'Recent'}</span>
+              <a href="/session/${s.id}" class="btn-resume">Resume →</a>
+            </div>
+          </div>
+        `).join('');
+      } catch (e) {
+        sidebarHistoryList.innerHTML = '<p style="color:var(--text-muted);font-size:0.88rem;">Could not load session history.</p>';
+      }
+    }
+
+    async function deleteSession(id) {
+      if (!confirm('Are you sure you want to delete this session?')) return;
+      try {
+        await fetch(`/api/session/${id}`, { method: 'DELETE' });
+        const el = document.getElementById(`sidebar_session_${id}`);
+        if (el) el.remove();
+      } catch (e) {
+        alert('Could not delete session.');
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    // ── Input Tab Switching ───────────────────────────────────────────────────
+    function switchInputTab(tab) {
+      const tabSearch = document.getElementById('tabSearch');
+      const tabUpload = document.getElementById('tabUpload');
+      const panelSearch = document.getElementById('panelSearch');
+      const panelUpload = document.getElementById('panelUpload');
+
+      if (tab === 'search') {
+        tabSearch.classList.add('active');
+        tabUpload.classList.remove('active');
+        panelSearch.classList.remove('hidden');
+        panelUpload.classList.add('hidden');
+      } else {
+        tabUpload.classList.add('active');
+        tabSearch.classList.remove('active');
+        panelUpload.classList.remove('hidden');
+        panelSearch.classList.add('hidden');
+      }
+    }
+
+    // ── Model Card Selector ──────────────────────────────────────────────────
+    function selectModelCard(cardEl, modelVal) {
+      document.querySelectorAll('.model-card').forEach(c => c.classList.remove('selected'));
+      cardEl.classList.add('selected');
+      document.getElementById('selectedModelValue').value = modelVal;
+    }
+
+    // ── Topic Search & Synthesis (Tavily & OpenRouter) ────────────────────────
+    const gatherTopicBtn = document.getElementById('gatherTopicBtn');
+    const searchTopicInput = document.getElementById('searchTopicInput');
+    const topicSearchStatus = document.getElementById('topicSearchStatus');
+    const statusMessage = document.getElementById('statusMessage');
+    const topicSources = document.getElementById('topicSources');
+
+    async function handleTopicGather() {
+      const topic = searchTopicInput.value.trim();
+      if (!topic) {
+        showError('Please enter a topic to search (e.g. Quantum Computing).');
+        searchTopicInput.focus();
+        return;
+      }
+
+      const selectedModel = document.getElementById('selectedModelValue').value || 'nemotron';
+      gatherTopicBtn.disabled = true;
+      gatherTopicBtn.innerHTML = `
+        <span class="status-spinner" style="width:18px;height:18px;border-color:rgba(255,255,255,0.3);border-top-color:#fff;"></span>
+        <span>Gathering &amp; Synthesizing Content...</span>
+      `;
+
+      topicSearchStatus.classList.remove('hidden');
+      statusMessage.innerHTML = `
+        <span class="status-spinner"></span>
+        <span>Searching live web context via <b>Tavily API</b> and synthesizing with <b>OpenRouter (${escapeHtml(selectedModel)})</b>...</span>
+      `;
+      topicSources.classList.add('hidden');
+      topicSources.innerHTML = '';
+
+      try {
+        const res = await fetch('/api/topic/search-and-synthesize', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ topic: topic, model: selectedModel })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          throw new Error(data.detail || 'Failed to synthesize topic material.');
+        }
+
+        // Auto fill topic name and docText
+        document.getElementById('topicName').value = data.topic_name;
+        document.getElementById('docText').value = data.synthesized_text;
+
+        // Render sources if available
+        statusMessage.innerHTML = `
+          <span style="color:#059669;font-weight:600;">✓ Topic content successfully generated using ${escapeHtml(data.model_used || selectedModel)}!</span>
+        `;
+
+        if (data.sources && data.sources.length) {
+          topicSources.innerHTML = `
+            <span style="font-weight:600;font-size:0.78rem;margin-right:4px;color:var(--text-secondary)">Web Sources:</span>
+            ${data.sources.map(s => `<a href="${escapeHtml(s.url)}" target="_blank" rel="noopener" class="source-chip">🔗 ${escapeHtml(s.title || 'Source')}</a>`).join('')}
+          `;
+          topicSources.classList.remove('hidden');
+        }
+
+        // Smooth scroll to Study Material Preview
+        document.getElementById('docText').scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      } catch (err) {
+        statusMessage.innerHTML = `<span style="color:#dc2626;font-weight:600;">❌ ${escapeHtml(err.message)}</span>`;
+      } finally {
+        gatherTopicBtn.disabled = false;
+        gatherTopicBtn.innerHTML = `
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span>Intelligently Gather &amp; Synthesize Topic</span>
+        `;
+      }
+    }
+
+    if (gatherTopicBtn) {
+      gatherTopicBtn.addEventListener('click', handleTopicGather);
+    }
+    if (searchTopicInput) {
+      searchTopicInput.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          handleTopicGather();
+        }
+      });
+    }
+
+
+    // ── State ─────────────────────────────────────────────────────────────────
+    let selectedMode = 'teach';
+    let extractedText = '';
+
+
+    // ── Mode selection ────────────────────────────────────────────────────────
+    document.querySelectorAll('.mode-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        selectedMode = card.dataset.mode;
+      });
+    });
+
+    // ── File upload ───────────────────────────────────────────────────────────
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const fileChip = document.getElementById('fileChip');
+    const fileChipName = document.getElementById('fileChipName');
+    const removeFileBtn = document.getElementById('removeFileBtn');
+    const docText = document.getElementById('docText');
+
+    document.getElementById('browseBtn').addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') fileInput.click(); });
+
+    dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault();
+      dropZone.classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (file) handleFile(file);
+    });
+
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files[0];
+      if (file) handleFile(file);
+    });
+
+    removeFileBtn.addEventListener('click', () => {
+      extractedText = '';
+      docText.value = '';
+      fileChip.classList.add('hidden');
+      fileInput.value = '';
+    });
+
+    async function handleFile(file) {
+      const browseBtn = document.getElementById('browseBtn');
+      browseBtn.disabled = true;
+      browseBtn.textContent = 'Reading...';
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        const res = await fetch('/api/extract-text', { method: 'POST', body: formData });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Could not read file.');
+        extractedText = data.text;
+        docText.value = extractedText;
+        fileChipName.textContent = file.name;
+        fileChip.classList.remove('hidden');
+        // Auto-fill topic name from filename
+        const topicInput = document.getElementById('topicName');
+        if (!topicInput.value) {
+          topicInput.value = file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ');
+        }
+      } catch (err) {
+        showError(err.message);
+      } finally {
+        browseBtn.disabled = false;
+        browseBtn.textContent = 'Browse file';
+      }
+    }
+
+    // ── Start session ─────────────────────────────────────────────────────────
+    document.getElementById('startBtn').addEventListener('click', async () => {
+      const text = docText.value.trim();
+      const topic = document.getElementById('topicName').value.trim();
+
+      if (!text) { showError('Please upload a document or paste your study material first.'); return; }
+      if (!topic) { showError('Please enter a topic or chapter name.'); return; }
+
+      const btn = document.getElementById('startBtn');
+      btn.disabled = true;
+      btn.querySelector('.btn-start-text').textContent = 'Starting...';
+
+      try {
+        const res = await fetch('/api/session/start', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ document_text: text, topic_name: topic, mode: selectedMode })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) throw new Error(data.detail || 'Failed to create session.');
+        window.location.href = `/session/${data.session_id}`;
+      } catch (err) {
+        showError(err.message);
+        btn.disabled = false;
+        btn.querySelector('.btn-start-text').textContent = 'Start Learning Session';
+      }
+    });
+
+    function showError(msg) {
+      const banner = document.getElementById('errorBanner');
+      banner.textContent = msg;
+      banner.classList.remove('hidden');
+      setTimeout(() => banner.classList.add('hidden'), 5000);
+    }
+  </script>
+</body>
+</html>
